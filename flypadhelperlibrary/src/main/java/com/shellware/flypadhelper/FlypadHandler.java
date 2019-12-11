@@ -51,9 +51,11 @@ public class FlypadHandler extends Handler {
             final State newState = State.values()[bundle.getInt("newState")];
             final State oldState = State.values()[bundle.getInt("oldState")];
 
-            for (FlypadListener flypadListener : listeners) {
-                flypadListener.onFlypadStateChanged(helper, newState, oldState);
-            }
+            mainThreadHandler.post(() -> {
+                for (FlypadListener flypadListener : listeners) {
+                    flypadListener.onFlypadStateChanged(helper, newState, oldState);
+                }
+            });
 
             // state messages do not contain any other bundle data
             return;
