@@ -35,7 +35,7 @@ public class FlypadInfo {
         RIGHT_BOTTOM
     }
 
-    enum FlypadButtonState {
+    public enum FlypadButtonState {
         RELEASED,
         PRESSED
     }
