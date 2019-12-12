@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("BLA", "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onResume() {
+        Log.i("BLA", "onResume");
+
         super.onResume();
 
         final FlypadInfo fpi = new FlypadInfo(this, flypadHelper);
@@ -50,8 +53,13 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor edit = prefs.edit();
 
+        // map bottom buttons to yaw
         edit.putString(fpi.getButtonMappingByButton(FlypadButton.LEFT_BOTTOM).getKey(), FlypadButtonAction.YAW_LEFT.name());
         edit.putString(fpi.getButtonMappingByButton(FlypadButton.RIGHT_BOTTOM).getKey(), FlypadButtonAction.YAW_RIGHT.name());
+
+        // map yaw to right x axis and roll to left x axis
+        edit.putString(fpi.getAxisMappingByAxis(FlypadInfo.FlypadAxis.RIGHT_X).getKey(), FlypadAxisAction.YAW.name());
+        edit.putString(fpi.getAxisMappingByAxis(FlypadInfo.FlypadAxis.LEFT_X).getKey(), FlypadAxisAction.ROLL.name());
 
         edit.apply();
 
@@ -60,13 +68,18 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
         flypadHelper.addFlypadListener(this);
 
-        if (flypadHelper.getState() == State.UNKNOWN || flypadHelper.getState() == State.DISCONNECTED) {
+        if (flypadHelper.getState() == State.BLE_ENABLED ||
+                flypadHelper.getState() == State.DISCONNECTED ||
+                flypadHelper.getState() == State.UNKNOWN) {
+
             flypadHelper.startLeScan();
         }
     }
 
     @Override
     public void onPause() {
+        Log.i("BLA", "onPause");
+
         if (flypadHelper.getState() == State.SCANNING) {
             flypadHelper.stopLeScan();
         }
@@ -78,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onDestroy() {
+        Log.i("BLA", "onDestroy");
+
         flypadHelper.destroy();
         super.onDestroy();
     }
@@ -112,18 +127,19 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
     public void onFlypadAxisValuesChanged(final FlypadHelper flypadHelper, float leftX, float leftY, float rightX, float rightY) {
         final float[] values = remapAxesBasedOnMappings(leftX, leftY, rightX, rightY);
 
-        yaw.setText(String.format(Locale.US, "%.5f", values[0]));
+        lastX = values[0];
+
+        yaw.setText(String.format(Locale.US, "%.5f", lastX));
         gaz.setText(String.format(Locale.US, "%.5f", values[1]));
         roll.setText(String.format(Locale.US, "%.5f", values[2]));
         pitch.setText(String.format(Locale.US, "%.5f", values[3]));
-
     }
 
     @Override
     public void onFlypadButtonChanged(final FlypadHelper flypadHelper, FlypadButton button, FlypadButtonState state) {
         final FlypadButtonMapping mapping = flypadHelper.getFlypadInfo().getButtonMappingByButton(button);
 
-        buttons.setText(String.format(Locale.US, "button %s mapped to %s is %s", mapping.getButton().name(), mapping.getAction().name(), state.name()));
+        buttons.setText(String.format(Locale.US, "%s button mapped to %s is %s", mapping.getTitle(), toProper(mapping.getAction().name()), toProper(state.name())));
 
         if (state == FlypadButtonState.PRESSED) {
             // handle special case for mapping yaw to buttons
@@ -165,8 +181,6 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
                     break;
             }
         }
-
-
     }
 
     private float[] remapAxesBasedOnMappings(final float leftX, final float leftY, final float rightX, final float rightY) {
