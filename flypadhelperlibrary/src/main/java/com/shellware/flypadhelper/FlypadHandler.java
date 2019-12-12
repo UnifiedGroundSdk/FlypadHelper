@@ -13,10 +13,10 @@ import com.shellware.flypadhelper.FlypadListener.State;
 import com.shellware.flypadhelper.FlypadInfo.FlypadButtonState;
 import com.shellware.flypadhelper.FlypadInfo.FlypadButton;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import androidx.annotation.NonNull;
 
 public class FlypadHandler extends Handler {
     private static final String CLASS_NAME = FlypadHandler.class.getSimpleName();
@@ -25,7 +25,7 @@ public class FlypadHandler extends Handler {
     private final Collection<FlypadListener> listeners = new ArrayList<>();
     private final Handler mainThreadHandler;
 
-    FlypadHandler(@NotNull final FlypadHelper helper, @NotNull Looper looper) {
+    FlypadHandler(@NonNull final FlypadHelper helper, @NonNull Looper looper) {
         super(looper);
         this.helper = helper;
         mainThreadHandler =  new Handler(Looper.getMainLooper());
