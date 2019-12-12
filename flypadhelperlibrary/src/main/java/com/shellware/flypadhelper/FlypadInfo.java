@@ -120,7 +120,7 @@ public class FlypadInfo {
         }
 
         public String getTitle() {
-            return toProper(button.name()).replace("_", " ");
+            return toProper(button.name());
         }
 
         public boolean isPressed() {
@@ -154,7 +154,7 @@ public class FlypadInfo {
         }
 
         public String getTitle() {
-            return toProper(axis.name()).replace("_", " ");
+            return toProper(axis.name());
         }
     }
 
@@ -519,7 +519,7 @@ public class FlypadInfo {
         final ArrayList<String> entries = new ArrayList<>();
 
         for (FlypadButton button : FlypadButton.values()) {
-            entries.add(formatted ? toProper(button.name().replace("_", " ")) : button.name());
+            entries.add(formatted ? toProper(button.name()) : button.name());
         }
 
         return entries.toArray(new String[entries.size()]);
@@ -530,7 +530,7 @@ public class FlypadInfo {
         final ArrayList<String> entries = new ArrayList<>();
 
         for (FlypadAxis axis : FlypadAxis.values()) {
-            entries.add(formatted ? toProper(axis.name().replace("_", " ")) : axis.name());
+            entries.add(formatted ? toProper(axis.name()) : axis.name());
         }
 
         return entries.toArray(new String[entries.size()]);
@@ -542,7 +542,7 @@ public class FlypadInfo {
         final ArrayList<String> entries = new ArrayList<>();
 
         for (FlypadButtonAction action : FlypadButtonAction.values()) {
-            entries.add(formatted ? toProper(action.name().replace("_", " ")) : action.name());
+            entries.add(formatted ? toProper(action.name()) : action.name());
         }
 
         return entries.toArray(new String[entries.size()]);
@@ -554,7 +554,7 @@ public class FlypadInfo {
         final ArrayList<String> entries = new ArrayList<>();
 
         for (FlypadAxisAction action : FlypadAxisAction.values()) {
-            entries.add(formatted ? toProper(action.name().replace("_", " ")) : action.name());
+            entries.add(formatted ? toProper(action.name()) : action.name());
         }
 
         return entries.toArray(new String[entries.size()]);

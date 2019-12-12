@@ -112,6 +112,7 @@ public class FlypadHelper extends BroadcastReceiver {
 
         this.self = this;
         this.ctx = ctx;
+
         flypadInfo = new FlypadInfo(ctx, self);
 
         final BluetoothManager bluetoothManager = (BluetoothManager) ctx.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -128,7 +129,6 @@ public class FlypadHelper extends BroadcastReceiver {
         connectingTimeoutRunnable = () -> {
             if (state != State.CONNECTED) {
                 btleGattCallback.onConnectionStateChange(null, 0, BluetoothAdapter.STATE_DISCONNECTED);
-                startLeScan();
             }
         };
     }
@@ -223,7 +223,7 @@ public class FlypadHelper extends BroadcastReceiver {
 
                 sendStateChange(State.CONNECTING);
                 flypadHandler.removeCallbacks(connectingTimeoutRunnable);
-                flypadHandler.postDelayed(connectingTimeoutRunnable, 10000);
+                flypadHandler.postDelayed(connectingTimeoutRunnable, 5000);
 
                 bluetoothGatt = device.connectGatt(ctx, false, btleGattCallback);
             }
@@ -299,7 +299,6 @@ public class FlypadHelper extends BroadcastReceiver {
                 notifyDescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 bluetoothGatt.writeDescriptor(notifyDescriptor);
 
-//                ConfigData.setGamepadPresent(true);
                 sendStateChange(State.CONNECTED);
             }
         }
@@ -389,14 +388,15 @@ public class FlypadHelper extends BroadcastReceiver {
             }
 
             if (newState == BluetoothProfile.STATE_DISCONNECTED && sendStateChange(State.DISCONNECTED)) {
-//                ConfigData.setGamepadPresent(false);
                 wasConnected = true;
 
-                bluetoothGatt.disconnect();
-                bluetoothGatt.close();
-                bluetoothGatt = null;
+                if (bluetoothGatt != null) {
+                    bluetoothGatt.disconnect();
+                    bluetoothGatt.close();
+                    bluetoothGatt = null;
+                }
 
-                startLeScan();
+                if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) startLeScan();
             }
         }
     };
@@ -460,11 +460,11 @@ public class FlypadHelper extends BroadcastReceiver {
             c = (capNext)
                     ? Character.toUpperCase(c)
                     : Character.toLowerCase(c);
-            sb.append(capNext ? " " : c);
+            sb.append(c);
             capNext = (ACTIONABLE_DELIMITERS.indexOf((int) c) >= 0); // explicit cast not needed
         }
 
-        return sb.toString();
+        return sb.toString().replace("_", " ");
     }
 
     public static void logEvent(final String className, final String message) {
