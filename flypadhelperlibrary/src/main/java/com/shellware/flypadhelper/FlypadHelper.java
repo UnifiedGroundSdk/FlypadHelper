@@ -128,6 +128,7 @@ public class FlypadHelper extends BroadcastReceiver {
         connectingTimeoutRunnable = () -> {
             if (state != State.CONNECTED) {
                 btleGattCallback.onConnectionStateChange(null, 0, BluetoothAdapter.STATE_DISCONNECTED);
+                startLeScan();
             }
         };
     }
