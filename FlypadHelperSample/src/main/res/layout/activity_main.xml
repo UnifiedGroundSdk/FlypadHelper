@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/flypad_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Flypad Status"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/battery_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/battery_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="battery"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/battery"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/state_label"
+        app:layout_constraintTop_toTopOf="@id/flypad_label" />
+
+    <TextView
+        android:id="@+id/state_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="state"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/battery"
+        app:layout_constraintLeft_toLeftOf="@id/battery_label"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/flypad_label" />
+
+
+    <TextView
+        android:id="@+id/battery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/axes_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/state"
+        app:layout_constraintTop_toTopOf="@id/battery_label" />
+
+    <TextView
+        android:id="@+id/state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UNKNOWN"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/axes_label"
+        app:layout_constraintLeft_toLeftOf="@id/battery"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/battery_label" />
+    
+    <TextView
+        android:id="@+id/axes_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Axes Status"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/yaw_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/state" />
+
+    <TextView
+        android:id="@+id/yaw_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="yaw"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/yaw"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/gaz_label"
+        app:layout_constraintTop_toTopOf="@id/axes_label" />
+
+    <TextView
+        android:id="@+id/gaz_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gaz"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/yaw"
+        app:layout_constraintLeft_toLeftOf="@id/yaw_label"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/axes_label" />
+
+
+    <TextView
+        android:id="@+id/yaw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/roll_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/gaz"
+        app:layout_constraintTop_toTopOf="@id/yaw_label" />
+
+    <TextView
+        android:id="@+id/gaz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/roll_label"
+        app:layout_constraintLeft_toLeftOf="@id/yaw"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/yaw_label" />
+
+    <TextView
+        android:id="@+id/roll_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="roll"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/roll"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/pitch_label"
+        app:layout_constraintTop_toTopOf="@id/gaz" />
+
+    <TextView
+        android:id="@+id/pitch_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="pitch"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/roll"
+        app:layout_constraintLeft_toLeftOf="@id/roll_label"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/gaz" />
+
+
+    <TextView
+        android:id="@+id/roll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/button_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/pitch"
+        app:layout_constraintTop_toTopOf="@id/roll_label" />
+
+    <TextView
+        android:id="@+id/pitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/button_label"
+        app:layout_constraintLeft_toLeftOf="@id/roll"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/roll_label" />
+
+    <TextView
+        android:id="@+id/button_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Buttons Status"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@id/buttons"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/roll" />
+
+    <TextView
+        android:id="@+id/buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="N/A"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_label" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

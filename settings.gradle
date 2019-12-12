@@ -1,2 +1,3 @@
 include ':flypadhelperlibrary'
+include ':flypadhelpersample'
 rootProject.name='Flypad Helper Project'
