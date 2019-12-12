@@ -8,7 +8,7 @@ import com.shellware.flypadhelper.FlypadInfo.FlypadButtonState;
 
 public interface FlypadListener {
 
-    // indicates the state our service:
+    // indicates the state of our service:
     enum State {
         BLE_ENABLED,
         BLE_DISABLED,
