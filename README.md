@@ -10,9 +10,15 @@ This is an Android Library project meant to provide support for the Parrot Flypa
 
 ```java
 public class MainActivity extends AppCompatActivity implements FlypadListener {
+    private final String CLASS_NAME = this.getClass().getSimpleName();
 
     private FlypadHelper flypadHelper = null;
     private ArrayList<FlypadAxisMapping> axisMappings = null;
+
+    private TextView yawLabel;
+    private TextView gazLabel;
+    private TextView rollLabel;
+    private TextView pitchLabel;
 
     private TextView battery;
     private TextView state;
@@ -26,10 +32,15 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("BLA", "onCreate");
+        Log.d(CLASS_NAME, "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        yawLabel = findViewById(R.id.yaw_label);
+        gazLabel = findViewById(R.id.gaz_label);
+        rollLabel = findViewById(R.id.roll_label);
+        pitchLabel = findViewById(R.id.pitch_label);
 
         battery = findViewById(R.id.battery);
         state = findViewById(R.id.state);
@@ -42,9 +53,10 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
         flypadHelper = new FlypadHelper(this);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onResume() {
-        Log.i("BLA", "onResume");
+        Log.d(CLASS_NAME, "onResume");
 
         super.onResume();
 
@@ -66,6 +78,24 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
         fpi.refreshMappings();
         axisMappings = fpi.getAxisMappings();
 
+        // update our axes labels with mapping results
+        for (FlypadAxisMapping axis : fpi.getAxisMappings()) {
+            switch (axis.getAction()) {
+                case ROLL:
+                    rollLabel.setText("roll (" + axis.getTitle() + ")");
+                    break;
+                case PITCH:
+                    pitchLabel.setText("pitch (" + axis.getTitle() + ")");
+                    break;
+                case YAW:
+                    yawLabel.setText("yaw (" + axis.getTitle() + ")");
+                    break;
+                case GAZ:
+                    gazLabel.setText("gaz (" + axis.getTitle() + ")");
+                    break;
+            }
+        }
+
         flypadHelper.addFlypadListener(this);
 
         if (flypadHelper.getState() == State.BLE_ENABLED ||
@@ -78,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onPause() {
-        Log.i("BLA", "onPause");
+        Log.d(CLASS_NAME, "onPause");
 
         if (flypadHelper.getState() == State.SCANNING) {
             flypadHelper.stopLeScan();
@@ -91,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onDestroy() {
-        Log.i("BLA", "onDestroy");
+        Log.d(CLASS_NAME, "onDestroy");
 
         flypadHelper.destroy();
         super.onDestroy();
@@ -99,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onFlypadStateChanged(FlypadHelper flypadHelper, State newState, State oldState) {
+        Log.d(CLASS_NAME, "onFlypadStateChanged new=" + newState + " old=" + oldState);
         state.setText(newState.name());
 
         switch (newState) {
@@ -120,13 +151,15 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onFlypadBatteryLevelChanged(final FlypadHelper flypadHelper, short batteryLevel) {
+        Log.d(CLASS_NAME, "onFlypadBatteryLevelChanged level=" + batteryLevel);
         battery.setText(String.format(Locale.US, "%d%%", batteryLevel));
     }
 
     @Override
     public void onFlypadAxisValuesChanged(final FlypadHelper flypadHelper, float leftX, float leftY, float rightX, float rightY) {
-        final float[] values = remapAxesBasedOnMappings(leftX, leftY, rightX, rightY);
+        Log.d(CLASS_NAME, "onFlypadAxisValuesChanged lx=" + leftX + " ly=" + leftY + " rx=" + rightX + " ry=" + rightY);
 
+        final float[] values = remapAxesBasedOnMappings(leftX, leftY, rightX, rightY);
         lastX = values[0];
 
         yaw.setText(String.format(Locale.US, "%.5f", lastX));
@@ -137,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
     @Override
     public void onFlypadButtonChanged(final FlypadHelper flypadHelper, FlypadButton button, FlypadButtonState state) {
+        Log.d(CLASS_NAME, "onFlypadButtonChanged button=" + button.name() + " state=" + state.name());
+
         final FlypadButtonMapping mapping = flypadHelper.getFlypadInfo().getButtonMappingByButton(button);
 
         buttons.setText(String.format(Locale.US, "%s button mapped to %s is %s", mapping.getTitle(), toProper(mapping.getAction().name()), toProper(state.name())));
