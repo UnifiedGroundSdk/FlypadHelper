@@ -3,6 +3,7 @@
  */
 
 package com.shellware.flypadhelper;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -41,9 +42,7 @@ import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FlypadHelper extends BroadcastReceiver {
-
-    private static final String CLASS_NAME = FlypadHelper.class.getSimpleName();
-
+    private final String CLASS_NAME = this.getClass().getSimpleName();
 
     private static final UUID FLYPAD_CONTROLLER_UUID = UUID.fromString("9e35fa00-4344-44d4-a2e2-0c7f6046878b");
     private static final UUID FLYPAD_CONTROLLER_NOTIFY_UUID = UUID.fromString("9e35fa01-4344-44d4-a2e2-0c7f6046878b");
@@ -61,7 +60,6 @@ public class FlypadHelper extends BroadcastReceiver {
     private static final int STATE_MESSAGE = 0;
     private static final int ACTION_MESSAGE = 1;
 
-    private final FlypadHelper self;
     private final Context ctx;
 
     private final DoubleRange sourceRange = new DoubleRange() {
@@ -110,10 +108,8 @@ public class FlypadHelper extends BroadcastReceiver {
     public FlypadHelper(final Context ctx) {
         logEvent(Log.INFO, CLASS_NAME, "create");
 
-        this.self = this;
         this.ctx = ctx;
-
-        flypadInfo = new FlypadInfo(ctx, self);
+        flypadInfo = new FlypadInfo(ctx, this);
 
         final BluetoothManager bluetoothManager = (BluetoothManager) ctx.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager != null ? bluetoothManager.getAdapter() : null;
@@ -124,7 +120,7 @@ public class FlypadHelper extends BroadcastReceiver {
         flypadThread = new HandlerThread("arpro4-flypad-thread", Process.THREAD_PRIORITY_MORE_FAVORABLE);
         flypadThread.start();
 
-        flypadHandler = new FlypadHandler(self, flypadThread.getLooper());
+        flypadHandler = new FlypadHandler(this, flypadThread.getLooper());
 
         connectingTimeoutRunnable = () -> {
             if (state != State.CONNECTED) {
@@ -214,18 +210,21 @@ public class FlypadHelper extends BroadcastReceiver {
 
             final BluetoothDevice device = result.getDevice();
 
-            if (device != null) {
-                bluetoothLeScanner.stopScan(scanCallback);
-
+            if (device != null && device.getName() != null) {
                 final String msg = String.format(Locale.US, "Found %s - %s",device.getName(), device.getAddress());
                 logEvent(Log.INFO, CLASS_NAME, msg);
+
                 flypadInfo.setName(device.getName());
 
+                bluetoothLeScanner.stopScan(scanCallback);
                 sendStateChange(State.CONNECTING);
+
                 flypadHandler.removeCallbacks(connectingTimeoutRunnable);
                 flypadHandler.postDelayed(connectingTimeoutRunnable, 5000);
 
                 bluetoothGatt = device.connectGatt(ctx, false, btleGattCallback);
+            } else {
+                logEvent(Log.INFO, CLASS_NAME, "Discarding " + result.toString());
             }
         }
 

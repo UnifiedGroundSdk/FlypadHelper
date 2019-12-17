@@ -12,6 +12,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import static com.shellware.flypadhelper.FlypadHelper.logEvent;
@@ -205,7 +206,7 @@ public class FlypadInfo {
         return name;
     }
 
-   void setName(String name) {
+   void setName(@NonNull String name) {
         if (!name.equals(this.name)) {
             this.name = name;
             logEvent(Log.INFO, CLASS_NAME, "name=" + name);
