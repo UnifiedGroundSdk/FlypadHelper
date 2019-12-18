@@ -1,7 +1,9 @@
 package com.shellware.flypadtestproject;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -17,7 +19,11 @@ import com.shellware.flypadhelper.FlypadListener;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import static com.shellware.flypadhelper.FlypadHelper.toProper;
@@ -27,6 +33,7 @@ import static com.shellware.flypadhelper.FlypadInfo.FlypadButtonAction;
 public class MainActivity extends AppCompatActivity implements FlypadListener {
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
+    private SharedPreferences prefs;
     private FlypadHelper flypadHelper = null;
     private ArrayList<FlypadAxisMapping> axisMappings = null;
 
@@ -43,12 +50,15 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
     private TextView pitch;
     private TextView buttons;
 
+    private boolean permissionsRequested;
     private float lastX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(CLASS_NAME, "onCreate");
         super.onCreate(savedInstanceState);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         setContentView(R.layout.activity_main);
 
@@ -77,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
         final FlypadInfo fpi = new FlypadInfo(this, flypadHelper);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor edit = prefs.edit();
 
         // map bottom buttons to yaw
@@ -119,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
 
             flypadHelper.startLeScan();
         }
+
+        if (!permissionsRequested) checkManifestPermissions();
     }
 
     @Override
@@ -338,5 +349,49 @@ public class MainActivity extends AppCompatActivity implements FlypadListener {
         }
 
         return new float[]{yaw, gaz, roll, pitch};
+    }
+
+    private void checkManifestPermissions() {
+        // handle 6.0 on demand permissions
+        boolean hasPermission =  (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+
+        if (!hasPermission) {
+            permissionsRequested = true;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {
+
+            boolean granted = true;
+
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    granted = false;
+                    break;
+                }
+            }
+
+            if (!granted) {
+                new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert)
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setTitle(R.string.app_name)
+                        .setMessage("Permission to use Device Location Services (required for bluetooth discovery) are required for this application to run properly.\r\n\r\n")
+                        .setCancelable(false)
+                        .setNeutralButton("OK", (dialog, which) -> finish())
+                        .show();
+            } else {
+                if (flypadHelper != null) {
+                    flypadHelper.stopLeScan();
+                    flypadHelper.startLeScan();
+                }
+            }
+        }
     }
 }
